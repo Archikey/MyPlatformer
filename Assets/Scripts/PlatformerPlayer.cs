@@ -71,7 +71,7 @@ public class PlatformerPlayer : MonoBehaviour
         {
             grounded = true;
         }
-
+        body.gravityScale = (grounded && Mathf.Approximately(direction.x,0f)) ? 0 : 1;
         if (grounded&&jumpRequested)
         {
             body.AddForce(
@@ -81,5 +81,32 @@ public class PlatformerPlayer : MonoBehaviour
 
             jumpRequested = false;
         }
+
+        MovingPlatform platform = null;
+        if (hit != null)
+        {
+            platform = hit.GetComponent<MovingPlatform>();
+        }
+        if (platform != null)
+        {
+            transform.parent = platform.transform;
+        }
+        else
+        {
+            transform.parent = null;
+        }
+        anim.SetFloat("speed", Mathf.Abs(direction.x));
+
+        Vector3 pScale = Vector3.one;
+        if (platform != null)
+        {
+            pScale = platform.transform.localScale;
+        }
+        if (!Mathf.Approximately(direction.x,0))
+        {
+            transform.localScale = new Vector3(Mathf.Sign(direction.x) / pScale.x, 1 / pScale.y, 1);
+        }
+
+
     }
 }
